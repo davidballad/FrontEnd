@@ -14,103 +14,121 @@ const mongoose = require('mongoose');
 
 mongoose.connect('mongodb://localhost:27017/todoDB', {useNewUrlParser: true});
 
-const listSchema = new mongoose.Schema({
+const itemSchema = new mongoose.Schema({
    name: String
 });
 
-const workSchema = new mongoose.Schema({
-   name: String
-});
 
-const List = mongoose.model('List', listSchema);
-const Work = mongoose.model('Work', workSchema);
-
-let newItems = [];
-let workItems = [];
-
-List.find((err, list)=>{
-   if(err) console.log(err);
-   list.forEach(list=>
-      newItems.push(list.name));
-});
-
-Work.find((err, work)=>{
-   if(err) console.log(err);
-   work.forEach(work=>
-      workItems.push(work.name));
-});
+const Item = mongoose.model('Item', itemSchema);
 
 
 app.get('/', (req, res)=>{
-      res.render('home', {
-         listName: date.date,
-         newItems: newItems
+      Item.find({},(err, item)=>{
+         if(err) console.log(err);
+         res.render('home', {
+            listName: 'Today',
+            newItems: item
+         });
       });
+      
 });
+
+const listSchema = new mongoose.Schema({
+   pageTitle: String,
+   itemList: [itemSchema]
+});
+
+const List = new mongoose.model('List', listSchema);
 
 
 
 
 app.post('/', (req, res)=>{
+   const listName = req.body.listName;
    if(req.body.newItem === ''){
-      if (req.body.listName === 'Work') {
-         res.redirect('/work');
-      } else {
+
+      if (req.body.listName === 'Today') {
          res.redirect('/');
+      } else {
+         res.redirect('/'+listName);
       }
-      
-   } else if(req.body.listName === 'Work'){
 
-      const work = new Work({
-         name: req.body.newItem
-      });
-      work.save();
-
-      workItems.push(req.body.newItem);
-      res.redirect('/work');
    } else {
-
-      const item = new List({
+      
+      const item = new Item({
          name: req.body.newItem
       });
-      item.save();
+   
+      if(listName === 'Today'){
+         
+         item.save();
+   
+         res.redirect('/');
+      } else{
+         // console.log(item);
+         List.findOne({pageTitle: req.body.listName},(err, list)=>{
+            list.itemList.push(item);
+            list.save();
+            res.redirect('/'+listName);
+         });
+         
+      }
 
-      newItems.push(req.body.newItem);
-      res.redirect('/');
    }
+   
    
 });
 
-app.get('/about', (req, res)=>{
-   res.render('about');
-});
 
+app.get('/:customName', (req, res)=>{
+   const newTitle = req.params.customName;
+
+   List.findOne({pageTitle:newTitle}, (err, list)=>{
+      if(!list){
+         console.log('not found: created');
+         const otherList = new List({
+            pageTitle: newTitle,
+            itemList:[{name: "New ToDoList Created"}]    
+            
+         });
+         otherList.save();
+         res.redirect('/'+newTitle);
+      } else{
+         console.log('found');
+         //console.log(list.itemList);
+         res.render('home', {
+            listName: newTitle,
+            newItems: list.itemList
+         });
+         
+      }
+         
+         
+        
+   });
+   
+});
 
 app.post('/delete', (req, res)=>{
    const itemToDelete = req.body.delItem[1];
    const listPage = req.body.delItem[0];
 
-   const index = newItems.indexOf(itemToDelete);
-   const index1 = workItems.indexOf(itemToDelete);
-   
-   if(index>-1 || index1>-1){
-      
-      if (listPage === 'Work') {
-         Work.deleteOne({name: itemToDelete}, (err)=>{
-            if(err) console.log(err);
-            
-            workItems.splice(index1, 1);
-            res.redirect('/work');
-         });
-      } else {
-         List.deleteOne({name: itemToDelete}, (err)=>{
+      if(listPage === 'Today'){
+         Item.deleteOne({name: itemToDelete}, (err)=>{
             if(err) console.log(err);
 
-               newItems.splice(index, 1);
                res.redirect('/');
          });
+      } else{
+         List.findOneAndUpdate({pageTitle: listPage},{$pull:{itemList: {name: itemToDelete}}}, (err, list)=>{
+               if(!err){
+                  res.redirect('/'+ listPage);
+               }
+         });
       }
-   }
+
+         
+   
 });
 
 
@@ -118,7 +136,9 @@ app.post('/delete', (req, res)=>{
 
 
 
-
+app.get('/about', (req, res)=>{
+   res.render('about');
+});
 
 app.listen(3000, ()=>
    console.log('listening on port 3000')

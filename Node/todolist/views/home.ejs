@@ -8,8 +8,8 @@
       <!-- <li><%=newItems%></li> -->
     <%  for(let i = 0; i<newItems.length; i++){ %>
       <ul>
-        <li><input type="checkbox" value="<%=newItems[i]%>" name="delItem[]" onChange="this.form.submit()"></li>
-        <li><p><%=newItems[i]%></p></li>
+        <li><input type="checkbox" value="<%=newItems[i].name%>" name="delItem[]" onChange="this.form.submit()"></li>
+        <li><p><%=newItems[i].name%></p></li>
       </ul>
     <% } %>
     %>
