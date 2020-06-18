@@ -8,11 +8,12 @@ const { fileLoader } = require('ejs');
 app.use(bodyParser.urlencoded({extended:true}));
 app.use(express.static(__dirname+'/public'));
 app.set('view engine', 'ejs');
+const _ = require('lodash');
 
 const date = require(__dirname+'/date.js');
 const mongoose = require('mongoose');
 
-mongoose.connect('mongodb://localhost:27017/todoDB', {useNewUrlParser: true});
+mongoose.connect('mongodb+srv://admin-davidballad:32865Mazda@cluster0-njzxa.mongodb.net/todoDB', {useNewUrlParser: true});
 
 const itemSchema = new mongoose.Schema({
    name: String
@@ -81,7 +82,7 @@ app.post('/', (req, res)=>{
 
 
 app.get('/:customName', (req, res)=>{
-   const newTitle = req.params.customName;
+   const newTitle = _.capitalize(req.params.customName);
 
    List.findOne({pageTitle:newTitle}, (err, list)=>{
       if(!list){
