@@ -4,11 +4,11 @@
    <p>Welcome and Read On! </p>
 
    <div class="card bg-secondary mb-3" style="max-width: auto;">
-   <% blogs.forEach((blog)=>{  %>
+   <% blogs.forEach(blog =>{  %>
          <h1 class="card-header title-header"><%=blog.blogTitle%></h1>
          <div class="card-body">
          <p><%=blog.blogContent.substring(0,100)%> ... </p>
-         <a href="/blog/<%=blog.blogTitle%>" class="alert-link">read more</a>
+         <a href="/blog/<%=blog._id%>" class="alert-link">read more</a>
          <hr class="my-4">
          </div>
       <% });  %>
