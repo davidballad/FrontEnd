@@ -1,0 +1,11 @@
+body{
+  text-align: center;
+}
+
+.divv{
+  display: grid;
+}
+
+.frame{
+  margin: 5px;
+}

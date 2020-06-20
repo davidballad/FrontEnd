@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="bootstrap-lumen.css">
+    <link rel="stylesheet" href="styles.css">
+    <title>Home page</title>
+  </head>
+  <body>
+
+    <h1 class="text-success">This will be a tweeter-like application. Lets get started:</h1>
+    <h2 id="today">Todat is </h2>
+    <h3 class="text-primary">Start composing your message:</h3>
+    <p>You have a limited number of characters(250)</p>
+    <textarea id="tweet-box" class="form-control" name="tweet" rows="6" cols="10" onkeyup="countCheck()" maxlength="250"></textarea>
+    <p class="text-info" id="charCount" >Characters Left: 250</p>
+    <button id="alertPost" class="btn btn-success" type="button" name="enter" onclick="iClick()">POST</button>
+
+    <h2>Your Tweets will be display below</h2>
+    <div id="div-create" class="alert alert-dismissible alert-info divv">
+       <!-- <textarea id="trimmed-tweet" class="form-control" name="name" rows="8" cols="80" disabled></textarea> -->
+    </div>
+
+
+
+  </body>
+  <script src="index.js" charset="utf-8"></script>
+</html>
